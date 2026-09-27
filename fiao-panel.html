@@ -127,7 +127,14 @@ tr.row:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
 .day[data-s] small{color:inherit}
 .day[data-s=""] small{color:var(--pewter)}
 @media (max-width:480px){.days{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.gate{border-radius:var(--r);padding:14px 16px;display:grid;gap:4px}
+.gate{border-radius:var(--r);padding:14px 16px;display:grid;gap:4px;transition:background-color .25s ease}
+.gate strong{transition:color .25s ease}
+@keyframes bump{from{transform:scale(.9)}}
+@keyframes swap{from{opacity:0;transform:translateY(4px)}}
+@media (prefers-reduced-motion:no-preference){
+  .day.bump{animation:bump .26s var(--ease-out)}
+  .gate.swap strong{animation:swap .3s var(--ease-out)}
+}
 .gate strong{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;letter-spacing:-.015em}
 .gate span{color:var(--graphite)}
 .gate.ok{background:var(--ok-soft)} .gate.ok strong{color:var(--ok)}
@@ -248,7 +255,7 @@ function renderDetail(){
     const labels={paid:"Pagó",part:"Parcial",miss:"No pagó","":"Pendiente"};
     d.innerHTML=DAYS.slice(0,p.n).map((n,i)=>{const s=c.week[i]||"";
       return `<button class="day" type="button" data-i="${i}" data-s="${s}" aria-label="${n}: ${labels[s]}. Toca para cambiar."><small>${n}</small><span class="num">${usd(p.cuota)}</span><small>${labels[s]}</small></button>`}).join("");
-    d.querySelectorAll(".day").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;const order=["","paid","part","miss"];c.week[i]=order[(order.indexOf(c.week[i]||"")+1)%4];render();$("days").querySelector(`[data-i="${i}"]`).focus();});
+    d.querySelectorAll(".day").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;const order=["","paid","part","miss"];const before=$("gate").className;c.week[i]=order[(order.indexOf(c.week[i]||"")+1)%4];render();const nb=$("days").querySelector(`[data-i="${i}"]`);nb.classList.add("bump");nb.focus();if($("gate").className!==before)$("gate").classList.add("swap");});
   }
   const left=Math.max(0,p.cred-paidAmt(c,p)),s=status(c,p),g=$("gate");
   if(c.open){g.className="gate bad";g.innerHTML=`<strong><i class="ph ph-prohibit" aria-hidden="true"></i>Próximo pedido: solo de contado</strong><span>Tiene un atraso abierto de un ciclo anterior. Es la misma regla que ya usan los distribuidores: si no pagas lo anterior, no te vuelvo a fiar.</span>`;}
