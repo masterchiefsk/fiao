@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fiao · Panel del distribuidor</title>
+<meta name="description" content="Prototipo del panel de Fiao: cupo por cliente, cuotas diarias por pago móvil y recordatorios por WhatsApp.">
+<meta name="theme-color" content="#15191e">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+:root{
+  color-scheme:light;
+  --ember:#ff5900; --ember-press:#e04e00;
+  --carbon:#15191e; --ink:#000000; --paper:#ffffff;
+  --fog:#f3f3f7; --line:#e4e5ea; --mist:#b9bbc6; --pewter:#5f636b; --graphite:#60646c;
+  --ok:#1f7a45; --ok-soft:#e3f3e8; --warn:#8a5a00; --warn-soft:#fbefd5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --font:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r:12px; --r-sm:6px;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;letter-spacing:-.011em;font-feature-settings:"cv01","cv10","ss03";-webkit-font-smoothing:antialiased}
+::selection{background:#ffd9c2}
+a{color:inherit;text-underline-offset:3px}
+h1,h2{font-weight:600;margin:0;text-wrap:balance}
+p{margin:0}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:24px}
+@media (max-width:480px){.wrap{padding-inline:16px}}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:0}
+.label{font-size:12.5px;font-weight:500;color:var(--pewter)}
+.hint{font-size:13px;color:var(--pewter)}
+
+.bar{background:var(--carbon);color:#d6d8de;font-size:12.5px;font-weight:500;padding:9px 16px;text-align:center}
+.bar a{color:var(--paper);font-weight:600;margin-left:8px;white-space:nowrap}
+nav{border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.logo{font-weight:600;font-size:22px;letter-spacing:-.04em;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.logo i{width:12px;height:12px;border-radius:4px;background:currentColor}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:15px;font-weight:600;white-space:nowrap;border-radius:var(--r);padding:10px 18px;border:0;cursor:pointer;text-decoration:none;background:var(--ember);color:var(--paper);transition:background-color .15s ease,transform .16s var(--ease-out)}
+.btn:active,.quiet:active,.day:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.btn:hover{background:var(--ember-press)}}
+.quiet{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:14px;font-weight:500;background:var(--paper);color:var(--ink);border:1px solid var(--mist);border-radius:var(--r);padding:8px 14px;cursor:pointer;transition:background-color .15s ease,transform .16s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.quiet:hover{background:var(--fog)}}
+@media (max-width:420px){nav .btn{padding:9px 14px;font-size:14px}}
+
+main{padding-block:40px 64px;display:grid;gap:24px}
+header{display:grid;gap:8px}
+h1{font-size:clamp(30px,4vw,44px);line-height:1.05;letter-spacing:-.035em}
+header p{color:var(--graphite);font-size:16px;max-width:64ch}
+
+/* conditions */
+.settings{background:var(--fog);border-radius:var(--r);padding:20px;display:grid;grid-template-columns:repeat(3,minmax(0,150px)) minmax(0,1fr);gap:16px 20px;align-items:end}
+.field{display:grid;gap:6px}
+.field input,.field select{font:inherit;font-family:var(--mono);font-size:15px;background:var(--paper);color:var(--ink);border:1px solid var(--mist);border-radius:var(--r);padding:9px 12px;width:100%;min-height:44px}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2360646c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.field input:focus-visible,.field select:focus-visible{outline:2px solid var(--ink);outline-offset:0}
+.settings .hint{align-self:center}
+@media (max-width:860px){.settings{grid-template-columns:repeat(3,minmax(0,1fr))}.settings .hint{grid-column:1/-1}}
+@media (max-width:480px){.settings{grid-template-columns:1fr 1fr}.settings .field:first-child{grid-column:1/-1}}
+
+/* summary: one strip, not four cards */
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:var(--r)}
+.stat{padding:18px 20px;display:grid;gap:4px}
+.stat + .stat{border-left:1px solid var(--line)}
+.stat .v{font-family:var(--mono);font-size:26px;letter-spacing:-.02em}
+@media (max-width:860px){.summary{grid-template-columns:1fr 1fr}.stat:nth-child(3){border-left:0}.stat:nth-child(n+3){border-top:1px solid var(--line)}}
+
+/* layout */
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:980px){.grid{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:18px}
+.head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;justify-content:space-between}
+h2{font-size:19px;letter-spacing:-.02em}
+
+/* clients table */
+table{width:100%;border-collapse:collapse}
+th{white-space:nowrap;text-align:left;font-weight:500;font-size:12.5px;color:var(--pewter);padding:0 10px 10px;border-bottom:1px solid var(--line)}
+td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+.r{text-align:right}
+tr.row{cursor:pointer}
+tr.row td{transition:background-color .15s ease}
+@media (hover:hover) and (pointer:fine){tr.row:hover td{background:var(--fog)}}
+tr.row[aria-selected=true] td{background:var(--fog)}
+tr.row[aria-selected=true] .who::before{opacity:1}
+tr.row:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.who{font-weight:600;display:flex;align-items:flex-start;gap:8px}
+.who::before{content:"";width:6px;height:6px;margin-top:8px;border-radius:50%;background:var(--ink);opacity:0;flex:none;transition:opacity .15s ease}
+.kind{color:var(--pewter);font-size:13px;padding-left:14px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:var(--r-sm);padding:2px 8px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-ok{background:var(--ok-soft);color:var(--ok)} .p-warn{background:var(--warn-soft);color:var(--warn)} .p-bad{background:var(--bad-soft);color:var(--bad)}
+@media (max-width:640px){
+  thead{display:none}
+  table,tbody{display:block}
+  tr.row{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:14px 8px;border-bottom:1px solid var(--line);border-radius:var(--r-sm)}
+  tbody tr:last-child{border-bottom:0}
+  tr.row td{padding:0;border:0;background:none!important}
+  tr.row[aria-selected=true]{background:var(--fog)}
+  td.c-name{grid-column:1}
+  td.c-state{grid-column:2;grid-row:1;align-self:start}
+  td.c-n{grid-column:1/-1;display:flex;gap:16px;text-align:left;font-size:13px}
+  td.c-hide{display:none}
+  td.c-n span::before{content:attr(data-l) " ";font-family:var(--font);color:var(--pewter)}
+}
+@media (min-width:641px){td.c-n{display:table-cell}td.c-n span{display:block}td.c-n span + span{display:none}}
+
+/* detail */
+.split{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--fog);border-radius:var(--r)}
+.split div{padding:12px 14px;display:grid;gap:2px}
+.split div + div{border-left:1px solid var(--line)}
+.split .num{font-size:20px}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.day{font:inherit;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);padding:8px 2px;display:grid;gap:2px;justify-items:center;cursor:pointer;min-height:64px;transition:background-color .15s ease,border-color .15s ease,transform .16s var(--ease-out)}
+.day small{font-size:11px;color:var(--pewter)}
+.day .num{font-size:13px}
+.day[data-s="paid"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.day[data-s="part"]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.day[data-s="miss"]{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.day[data-s] small{color:inherit}
+.day[data-s=""] small{color:var(--pewter)}
+@media (max-width:480px){.days{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.gate{border-radius:var(--r);padding:14px 16px;display:grid;gap:4px}
+.gate strong{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;letter-spacing:-.015em}
+.gate span{color:var(--graphite)}
+.gate.ok{background:var(--ok-soft)} .gate.ok strong{color:var(--ok)}
+.gate.bad{background:var(--bad-soft)} .gate.bad strong{color:var(--bad)}
+.wa{background:var(--fog);border-radius:var(--r) var(--r) var(--r) 4px;padding:12px 14px;font-size:14px;white-space:pre-line;max-width:46ch;margin-top:8px}
+.wa-h{display:flex;align-items:center;gap:6px}
+.wa-h .ph{color:var(--ok);font-size:15px}
+.note{font-size:13px;color:var(--pewter);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:480px){.panel{padding:16px}.split .num{font-size:17px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="bar">Prototipo con datos de ejemplo<a href="index.html">← Volver a Fiao</a></div>
+
+<nav aria-label="Principal">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="Fiao, inicio"><i aria-hidden="true"></i>Fiao</a>
+    <a class="btn" href="index.html#piloto">Sumarme al piloto</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <header>
+    <h1>Panel del distribuidor</h1>
+    <p>Tú fías la mercancía. Fiao calcula el cupo de cada cliente y cobra una cuota diaria por pago móvil, directo a tu cuenta.</p>
+  </header>
+
+  <section class="settings" aria-label="Condiciones del distribuidor">
+    <div class="field"><label class="label" for="plazo">Días para pagar</label><input id="plazo" type="number" min="3" max="30" value="7" inputmode="numeric"></div>
+    <div class="field"><label class="label" for="pct">Parte a crédito</label><select id="pct"><option value="0.3">30%</option><option value="0.5" selected>50%</option><option value="0.7">70%</option></select></div>
+    <div class="field"><label class="label" for="com">Comisión Fiao</label><select id="com"><option value="0.015">1,5%</option><option value="0.02" selected>2%</option><option value="0.025">2,5%</option></select></div>
+    <p class="hint">Regla de cupo: arranca en la mitad del pedido promedio y sube 20% por cada ciclo pagado a tiempo, hasta el 100%. Con un atraso abierto, el cupo pasa a cero hasta completar dos compras de contado.</p>
+  </section>
+
+  <section class="summary" aria-label="Resumen de la semana">
+    <div class="stat"><span class="label">Mercancía a crédito</span><span class="v" id="sFiado">—</span></div>
+    <div class="stat"><span class="label">Cobrado esta semana</span><span class="v" id="sCob">—</span></div>
+    <div class="stat"><span class="label">Clientes con atraso</span><span class="v" id="sAtr">—</span></div>
+    <div class="stat"><span class="label">Comisión Fiao</span><span class="v" id="sCom">—</span></div>
+  </section>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="tc">
+      <div class="head"><h2 id="tc">Clientes</h2><span class="hint">Toca un cliente para ver su semana</span></div>
+      <table>
+        <thead><tr><th>Negocio</th><th class="r">Pedido prom.</th><th class="r">Ciclos a tiempo</th><th class="r">Cupo</th><th>Estado</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+
+    <section class="panel" aria-labelledby="dn" aria-live="polite">
+      <div><span class="label">Pedido de esta semana</span><h2 id="dn">—</h2></div>
+      <div class="split">
+        <div><span class="label">Contado</span><span class="num" id="dCont">—</span></div>
+        <div><span class="label">A crédito</span><span class="num" id="dCred">—</span></div>
+        <div><span class="label">Cuota diaria</span><span class="num" id="dCuota">—</span></div>
+      </div>
+      <div>
+        <div class="head" style="margin-bottom:8px"><span class="label">Pagos por pago móvil</span><span class="hint">Toca un día para cambiarlo</span></div>
+        <div class="days" id="days"></div>
+      </div>
+      <div class="gate" id="gate"></div>
+      <div>
+        <span class="label wa-h"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>Recordatorio por WhatsApp</span>
+        <div class="wa" id="wa"></div>
+      </div>
+      <div><button class="quiet" id="reset" type="button"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i>Reiniciar semana</button></div>
+      <p class="note">Qué no hace todavía: no se conecta a WhatsApp ni verifica pagos móviles reales; los pagos se marcan a mano. El dinero nunca pasa por Fiao: va de la cuenta del comerciante a la del distribuidor.</p>
+    </section>
+  </div>
+</main>
+
+<script>
+const clients=[
+  {id:1,name:"Arepera La Candelaria",kind:"Restaurante",avg:140,cycles:4,open:false,cash:0,week:["paid","paid","paid","paid","","",""]},
+  {id:2,name:"Bodega Los Palos Grandes",kind:"Bodega",avg:95,cycles:2,open:false,cash:0,week:["paid","part","paid","","","",""]},
+  {id:3,name:"Sushi Altamira",kind:"Restaurante",avg:260,cycles:6,open:false,cash:0,week:["paid","paid","paid","paid","paid","",""]},
+  {id:4,name:"Charcutería El Llano",kind:"Charcutería",avg:120,cycles:1,open:false,cash:0,week:["paid","miss","miss","","","",""]},
+  {id:5,name:"Abasto San Bernardino",kind:"Bodega",avg:80,cycles:0,open:true,cash:1,week:["","","","","","",""]},
+  {id:6,name:"Panadería Chacao",kind:"Panadería",avg:110,cycles:3,open:false,cash:0,week:["paid","paid","paid","paid","","",""]}
+];
+const DAYS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+const $=id=>document.getElementById(id);
+const usd=n=>"$"+n.toFixed(n%1?2:0);
+let sel=1; const orig=JSON.parse(JSON.stringify(clients));
+
+function cfg(){return{plazo:Math.max(3,Math.min(30,+$("plazo").value||7)),pct:+$("pct").value,com:+$("com").value}}
+function cupo(c){ if(c.open) return 0; return Math.min(1,0.5+0.2*c.cycles)*c.avg; }
+function plan(c){const k=cfg();const cred=Math.min(c.avg*k.pct,cupo(c));const cont=c.avg-cred;const n=Math.min(7,k.plazo);return{cred,cont,cuota:cred/n,n};}
+function paidAmt(c,p){return c.week.slice(0,p.n).reduce((s,d)=>s+(d==="paid"?p.cuota:d==="part"?p.cuota/2:0),0);}
+function misses(c){return c.week.filter(d=>d==="miss").length}
+function status(c,p){
+  if(c.open) return {t:"Solo contado",cls:"p-bad"};
+  const due=c.week.slice(0,p.n).filter(Boolean).length*p.cuota, gap=due-paidAmt(c,p);
+  if(misses(c)>=2) return {t:"Atrasado",cls:"p-bad"};
+  if(gap>0.01) return {t:"Debe "+usd(gap),cls:"p-warn"};
+  return {t:"Al día",cls:"p-ok"};
+}
+function renderTable(){
+  $("tbody").innerHTML=clients.map(c=>{const p=plan(c),s=status(c,p);
+    return `<tr class="row" tabindex="0" data-id="${c.id}" aria-selected="${c.id===sel}">
+      <td class="c-name"><div class="who">${c.name}</div><div class="kind">${c.kind}</div></td>
+      <td class="r num c-n"><span data-l="Pedido">${usd(c.avg)}</span><span data-l="Ciclos">${c.cycles}</span><span data-l="Cupo">${usd(cupo(c))}</span></td>
+      <td class="r num c-n c-hide">${c.cycles}</td>
+      <td class="r num c-n c-hide">${usd(cupo(c))}</td>
+      <td class="c-state"><span class="pill ${s.cls}">${s.t}</span></td></tr>`}).join("");
+  document.querySelectorAll("tr.row").forEach(r=>{const go=()=>{sel=+r.dataset.id;render();r.ownerDocument.querySelector(`tr.row[data-id="${sel}"]`).focus()};r.onclick=go;r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}});
+}
+function renderDetail(){
+  const c=clients.find(x=>x.id===sel),p=plan(c);
+  $("dn").textContent=c.name;
+  $("dCont").textContent=usd(p.cont);$("dCred").textContent=usd(p.cred);$("dCuota").textContent=p.cred?usd(p.cuota):"—";
+  const d=$("days");
+  if(c.open){d.innerHTML=`<p class="hint" style="grid-column:1/-1">Este cliente está pagando de contado. Lleva ${c.cash} de 2 compras de contado para recuperar crédito.</p>`;}
+  else{
+    const labels={paid:"Pagó",part:"Parcial",miss:"No pagó","":"Pendiente"};
+    d.innerHTML=DAYS.slice(0,p.n).map((n,i)=>{const s=c.week[i]||"";
+      return `<button class="day" type="button" data-i="${i}" data-s="${s}" aria-label="${n}: ${labels[s]}. Toca para cambiar."><small>${n}</small><span class="num">${usd(p.cuota)}</span><small>${labels[s]}</small></button>`}).join("");
+    d.querySelectorAll(".day").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;const order=["","paid","part","miss"];c.week[i]=order[(order.indexOf(c.week[i]||"")+1)%4];render();$("days").querySelector(`[data-i="${i}"]`).focus();});
+  }
+  const left=Math.max(0,p.cred-paidAmt(c,p)),s=status(c,p),g=$("gate");
+  if(c.open){g.className="gate bad";g.innerHTML=`<strong><i class="ph ph-prohibit" aria-hidden="true"></i>Próximo pedido: solo de contado</strong><span>Tiene un atraso abierto de un ciclo anterior. Es la misma regla que ya usan los distribuidores: si no pagas lo anterior, no te vuelvo a fiar.</span>`;}
+  else if(s.cls==="p-bad"){g.className="gate bad";g.innerHTML=`<strong><i class="ph ph-lock-simple" aria-hidden="true"></i>Próximo pedido: bloqueado</strong><span>Dos cuotas sin pagar. Fiao avisa al distribuidor, que decide si lo pasa a contado. Saldo pendiente: <b class="num">${usd(left)}</b>.</span>`;}
+  else{g.className="gate ok";g.innerHTML=`<strong><i class="ph ph-check-circle" aria-hidden="true"></i>Próximo pedido: liberado</strong><span>Va al día. Si termina de pagar, su cupo sube a <b class="num">${usd(Math.min(1,0.5+0.2*(c.cycles+1))*c.avg)}</b>. Saldo pendiente: <b class="num">${usd(left)}</b>.</span>`;}
+  $("wa").textContent=c.open?`Hola, ${c.name}.\nTu próximo pedido va de contado. Te falta ${2-c.cash} compra de contado para volver a tener crédito.`:
+    `Hola, ${c.name}.\nTu cuota de hoy es ${usd(p.cuota)}. Te quedan ${usd(left)} de tu pedido.\nPago móvil a tu distribuidor:\nBanco 0102 · 0414-000-0000 · J-00000000-0\nSi hoy vendiste poco, puedes pagar la mitad y completar antes del próximo pedido.`;
+}
+function renderSummary(){
+  const k=cfg();let fiado=0,cob=0,atr=0;
+  clients.forEach(c=>{const p=plan(c);fiado+=p.cred;cob+=paidAmt(c,p);if(status(c,p).cls!=="p-ok")atr++;});
+  $("sFiado").textContent=usd(fiado);$("sCob").textContent=usd(cob);$("sAtr").textContent=atr+" de "+clients.length;$("sCom").textContent=usd(cob*k.com);
+}
+function render(){renderTable();renderDetail();renderSummary();}
+["plazo","pct","com"].forEach(id=>$(id).addEventListener("input",render));
+$("reset").onclick=()=>{const c=clients.find(x=>x.id===sel),o=orig.find(x=>x.id===sel);c.week=[...o.week];render();};
+render();
+</script>
+</body>
+</html>

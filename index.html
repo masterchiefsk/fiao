@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fiao · Crédito de proveedor con cobro diario</title>
+<meta name="description" content="Fiao ayuda a distribuidores a fiar mercancía a bodegas, areperas y restaurantes, y a cobrarla en cuotas diarias por pago móvil directo a su cuenta.">
+<meta name="theme-color" content="#15191e">
+<meta property="og:title" content="Fiao · Fía más. Cobra todos los días.">
+<meta property="og:description" content="Crédito de proveedor con cobro diario por pago móvil para el comercio de barrio en Caracas.">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+:root{
+  color-scheme:light;
+  --ember:#ff5900; --ember-press:#e04e00;
+  --abyss:#000710; --carbon:#15191e; --ink:#000000; --paper:#ffffff;
+  --fog:#f3f3f7; --line:#e4e5ea; --mist:#b9bbc6; --pewter:#5f636b; --graphite:#60646c;
+  --ok:#1f7a45; --ok-soft:#e3f3e8; --bad:#b3261e;
+  --font:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r:12px; --r-sm:6px;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;letter-spacing:-.011em;font-feature-settings:"cv01","cv10","ss03";-webkit-font-smoothing:antialiased;caret-color:var(--ember)}
+::selection{background:#ffd9c2;color:var(--ink)}
+a{color:inherit;text-underline-offset:3px;text-decoration-thickness:1px}
+h1,h2,h3{font-weight:600;margin:0;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:24px}
+@media (max-width:480px){.wrap{padding-inline:16px}}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:0}
+.ph{font-size:1.1em;line-height:1;flex:none}
+.big,.v{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:4px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;border-radius:var(--r);padding:11px 18px;border:0;cursor:pointer;text-decoration:none;background:var(--ember);color:var(--paper);transition:background-color .15s ease,transform .16s var(--ease-out)}
+.btn:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.btn:hover{background:var(--ember-press)}}
+.link{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:500;text-decoration:none;color:var(--ink)}
+@media (hover:hover) and (pointer:fine){.link:hover{text-decoration:underline}}
+
+/* top bar */
+.bar{background:var(--carbon);color:#d6d8de;font-size:12.5px;font-weight:500;padding:9px 16px;text-align:center}
+.bar a{color:var(--paper);font-weight:600;margin-left:8px;white-space:nowrap}
+
+/* nav */
+nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.logo{font-weight:600;font-size:22px;letter-spacing:-.04em;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.logo i{width:12px;height:12px;border-radius:4px;background:currentColor}
+.links{display:flex;gap:28px;font-size:14px;font-weight:500}
+.links a{text-decoration:none;color:var(--graphite)}
+@media (hover:hover) and (pointer:fine){.links a:hover{color:var(--ink)}}
+@media (max-width:760px){.links{display:none}}
+@media (max-width:380px){nav .btn{padding:9px 14px;font-size:14px}}
+
+/* hero */
+.hero{padding-block:72px 88px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,46fr) minmax(0,54fr);gap:64px;align-items:center}
+h1{font-size:clamp(44px,6.4vw,76px);line-height:.98;letter-spacing:-.04em;margin-bottom:24px}
+.lede{font-size:20px;line-height:1.45;color:var(--graphite);margin-bottom:36px;max-width:32ch}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:48px}.hero{padding-block:48px 64px}}
+@media (max-width:480px){.lede{font-size:18px}}
+
+/* hero preview: a miniature of the real panel */
+.stage{background:var(--fog);border-radius:var(--r);padding:32px;display:grid;gap:12px}
+@media (max-width:480px){.stage{padding:16px}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.card .ct{font-weight:600;font-size:15px;letter-spacing:-.015em}
+.meta{font-size:12.5px;color:var(--pewter)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:var(--r-sm);padding:2px 8px;background:var(--ok-soft);color:var(--ok);white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.meter{height:6px;border-radius:99px;background:var(--fog);overflow:hidden;margin:16px 0 8px}
+.meter b{display:block;height:100%;width:50%;background:var(--ink);border-radius:99px;transform-origin:left}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:16px}
+.week span{height:34px;border-radius:var(--r-sm);background:var(--fog);font-size:11.5px;font-weight:500;display:grid;place-items:center;color:var(--pewter)}
+.week span.p{background:var(--ink);color:var(--paper)}
+.week span.t{background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink);font-weight:600}
+.big{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.chat{background:var(--paper);border:1px solid var(--line);border-radius:var(--r) var(--r) var(--r) 4px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:340px;justify-self:end}
+.chat .who{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--graphite);margin-bottom:6px}
+.chat .who .ph{color:var(--ok);font-size:15px}
+@media (prefers-reduced-motion:no-preference){
+  .week span.p{animation:paid .45s var(--ease-out) both;animation-delay:calc(250ms + var(--i) * 110ms)}
+  .week span.t{animation:today .45s var(--ease-out) .65s both}
+  .meter b{animation:grow 1s var(--ease-out) .25s both}
+  .chat{animation:rise .6s var(--ease-out) 1s both}
+}
+@keyframes paid{from{background:var(--fog);color:var(--pewter)}}
+@keyframes today{from{box-shadow:inset 0 0 0 1.5px transparent}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes rise{from{opacity:0;transform:translateY(10px);filter:blur(2px)}}
+
+/* section scaffolding */
+.sec{padding-block:96px}
+.sec.tight{padding-top:0}
+h2{font-size:clamp(32px,3.8vw,50px);line-height:1.08;letter-spacing:-.035em;margin-bottom:16px;max-width:20ch}
+.sub{color:var(--graphite);font-size:18px;max-width:58ch;margin-bottom:48px}
+@media (max-width:600px){.sec{padding-block:64px}.sub{font-size:17px;margin-bottom:36px}}
+
+/* photos */
+.photo{margin:0;display:grid;gap:10px;align-content:start}
+.photo img{display:block;width:100%;height:100%;object-fit:cover;border-radius:var(--r);background:var(--fog)}
+.photo figcaption{font-size:13px;color:var(--pewter)}
+.strip{padding-bottom:96px}
+.strip .grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,3fr);gap:16px;align-items:end}
+.strip .photo .frame{height:clamp(240px,30vw,400px)}
+.strip .photo:nth-child(2) .frame{height:clamp(200px,24vw,320px)}
+.strip .photo:nth-child(3) .frame{height:clamp(220px,27vw,360px)}
+@media (max-width:760px){
+  .strip{padding-bottom:64px}
+  .strip .grid{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;padding-inline:16px;margin-inline:-16px;scrollbar-width:none;align-items:start}
+  .strip .grid::-webkit-scrollbar{display:none}
+  .strip .photo{scroll-snap-align:center}
+  .strip .photo .frame,.strip .photo:nth-child(n) .frame{height:260px}
+}
+.side .photo .frame{aspect-ratio:16/10}
+.pilot .photo{margin-top:8px}
+.pilot .photo .frame{aspect-ratio:4/3}
+
+/* facts: editorial rows, not cards */
+.band{background:var(--fog)}
+.facts{list-style:none;margin:0;padding:0;border-top:1px solid var(--mist)}
+.facts li{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:16px 48px;align-items:start;padding-block:32px;border-bottom:1px solid var(--mist)}
+.facts .v{font-size:clamp(52px,7vw,88px);font-weight:600;letter-spacing:-.04em;line-height:.95}
+.facts p{font-size:19px;line-height:1.45;max-width:46ch;padding-top:6px}
+.facts small{display:block;margin-top:12px;color:var(--pewter);font-size:13px}
+.facts small a{color:var(--graphite)}
+@media (max-width:760px){.facts li{grid-template-columns:1fr;padding-block:28px}.facts p{font-size:17px}}
+
+/* steps: a rail, the sequence is the information */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px}
+.steps li{border-top:1px solid var(--mist);padding-top:20px;display:grid;gap:10px;align-content:start;position:relative}
+.steps li::before{content:"";position:absolute;top:-4px;left:0;width:7px;height:7px;border-radius:50%;background:var(--ink)}
+.steps .n{font-size:13px;color:var(--pewter)}
+.steps h3{font-size:20px;letter-spacing:-.02em}
+.steps p{color:var(--graphite);font-size:15px}
+@media (max-width:980px){.steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 32px}}
+@media (max-width:540px){.steps{grid-template-columns:1fr;gap:28px}}
+
+/* money flow */
+.flow{margin-top:56px;border:1px solid var(--line);border-radius:var(--r);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) minmax(0,1.3fr);align-items:stretch}
+.flow > div{padding:24px;display:grid;gap:4px;align-content:center}
+.flow .arrow{display:grid;place-items:center;padding:0 4px;color:var(--pewter);font-size:13px;text-align:center;gap:2px}
+.flow .arrow .ph{font-size:22px;color:var(--ink)}
+.flow b{font-size:17px;font-weight:600;letter-spacing:-.015em}
+.flow .fiao{background:var(--fog);border-radius:0 var(--r) var(--r) 0}
+@media (max-width:820px){
+  .flow{grid-template-columns:1fr}
+  .flow .arrow{padding:0;grid-auto-flow:column;justify-content:start;gap:8px;padding-inline:24px}
+  .flow .arrow .ph{transform:rotate(90deg)}
+  .flow .fiao{border-radius:0 0 var(--r) var(--r)}
+}
+
+/* two sides */
+.sides{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.side{padding:36px;display:grid;gap:20px;align-content:start}
+.side + .side{border-left:1px solid var(--line)}
+.side.dist{background:var(--fog)}
+.side .who{font-size:13px;font-weight:500;color:var(--graphite);display:flex;align-items:center;gap:8px}
+.side .who .ph{font-size:18px;color:var(--ink)}
+.side h3{font-size:26px;line-height:1.15;letter-spacing:-.025em;max-width:18ch}
+.side ul{margin:0;padding:0;list-style:none;display:grid;gap:14px}
+.side li{display:grid;grid-template-columns:22px 1fr;gap:8px;color:var(--graphite);font-size:15.5px}
+.side li .ph{color:var(--ink);font-size:18px;margin-top:2px}
+.side li b{color:var(--ink);font-weight:600}
+@media (max-width:820px){.sides{grid-template-columns:1fr}.side + .side{border-left:0;border-top:1px solid var(--line)}.side{padding:28px 24px}}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px}
+.controls{border:1px solid var(--line);border-radius:var(--r);padding:32px;display:grid;gap:28px;align-content:start}
+.field{display:grid;gap:10px}
+.field label{font-size:14px;font-weight:500;display:flex;justify-content:space-between;align-items:baseline}
+.field output{font-family:var(--mono);font-size:15px;color:var(--ink)}
+input[type=range]{width:100%;margin:0;accent-color:var(--ink);height:24px;cursor:pointer}
+.controls .meta{border-top:1px solid var(--line);padding-top:16px}
+.out{background:var(--fog);border-radius:var(--r);padding:32px;display:grid;gap:24px;align-content:start}
+.out .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.out .pair div{display:grid;gap:2px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp > div{background:var(--paper);border-radius:var(--r);padding:20px;display:grid;gap:6px;align-content:start}
+.cmp .v{font-size:32px;font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.cmp .hl{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.cmp .loan .v{color:var(--bad)}
+.cmp p{font-size:13.5px;color:var(--graphite)}
+.save{font-size:15px;color:var(--graphite)}
+.save b{color:var(--ink)}
+@media (max-width:860px){.calc{grid-template-columns:1fr}.controls,.out{padding:24px}}
+@media (max-width:420px){.cmp{grid-template-columns:1fr}}
+
+/* pilot */
+.pilot{background:var(--fog)}
+.pilot .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:56px;align-items:start}
+.pilot ul{list-style:none;margin:0 0 28px;padding:0;display:grid;gap:12px}
+.pilot li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px;color:var(--graphite)}
+.pilot li .ph{color:var(--ink);font-size:18px;margin-top:2px}
+form{background:var(--paper);border-radius:var(--r);padding:32px;display:grid;gap:20px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.f{display:grid;gap:8px;align-content:start}
+.f label{font-size:14px;font-weight:500}
+.f .opt{color:var(--pewter);font-weight:400}
+.f input,.f select{font:inherit;font-size:16px;letter-spacing:-.01em;border:1px solid var(--mist);border-radius:var(--r);padding:12px 14px;background:var(--paper);color:var(--ink);width:100%;min-height:48px;transition:border-color .15s ease}
+.f select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2360646c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.f input::placeholder{color:var(--pewter);opacity:1}
+.f input:focus-visible,.f select:focus-visible{outline:2px solid var(--ink);outline-offset:0;border-color:var(--ink)}
+.f input[aria-invalid=true]{border-color:var(--bad)}
+.f .err{color:var(--bad);font-size:13px;display:flex;gap:6px;align-items:center}
+form .foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+form .foot .meta{max-width:36ch}
+.done{display:grid;gap:12px;background:var(--ok-soft);border-radius:var(--r);padding:18px 20px;font-size:15px}
+.done strong{display:flex;align-items:center;gap:8px;color:var(--ok)}
+.done a{font-weight:600}
+@media (prefers-reduced-motion:no-preference){.done{animation:rise .4s var(--ease-out) both}}
+@media (max-width:860px){.pilot .wrap{grid-template-columns:1fr;gap:36px}}
+@media (max-width:560px){.two{grid-template-columns:1fr}form{padding:24px 20px}}
+
+/* footer */
+footer{background:var(--abyss);color:var(--paper);padding-block:64px calc(40px + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px}
+footer h3{margin:0 0 14px;font-size:14px;font-weight:600}
+footer a,footer p{color:var(--mist);font-size:14px;text-decoration:none;margin:0 0 10px;display:block}
+footer .about{max-width:40ch}
+footer .logo{color:var(--paper);margin-bottom:16px}
+@media (hover:hover) and (pointer:fine){footer a:hover{color:var(--paper)}}
+footer :focus-visible{outline-color:var(--paper)}
+footer .legal{grid-column:1/-1;border-top:1px solid #1f2630;padding-top:24px;margin-top:8px;font-size:13px;color:var(--mist)}
+footer .credits{grid-column:1/-1;font-size:12px;line-height:1.6;color:var(--mist);margin:0}
+footer .credits a{display:inline;font-size:12px;margin:0;text-decoration:underline;text-decoration-color:#3a4350}
+@media (max-width:720px){footer .wrap{grid-template-columns:1fr 1fr}footer .wrap > div:first-child{grid-column:1/-1}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<div class="bar">Prototipo para el Builder Case de Makers Fellowship · Caracas, 2026<a href="fiao-panel.html">Probar el panel →</a></div>
+
+<nav aria-label="Principal">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Fiao, inicio"><i aria-hidden="true"></i>Fiao</a>
+    <div class="links"><a href="#como">Cómo funciona</a><a href="#calculadora">Calculadora</a><a href="fiao-panel.html">Panel</a></div>
+    <a class="btn" href="#piloto">Sumarme al piloto</a>
+  </div>
+</nav>
+
+<main>
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <h1>Fía más. Cobra todos los días.</h1>
+      <p class="lede">Dale crédito a bodegas, areperas y restaurantes, y cóbralo en cuotas diarias por pago móvil, directo a tu cuenta.</p>
+      <div class="actions">
+        <a class="btn" href="#piloto">Sumarme al piloto <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+        <a class="link" href="fiao-panel.html"><i class="ph ph-squares-four" aria-hidden="true"></i>Ver el panel en acción</a>
+      </div>
+    </div>
+
+    <div class="stage" role="img" aria-label="Ejemplo del panel: Arepera La Candelaria va al día, lleva tres cuotas pagadas y su cuota de hoy es de 10 dólares.">
+      <div class="card">
+        <div class="row"><p class="ct">Arepera La Candelaria</p><span class="pill">Al día</span></div>
+        <div class="meter"><b></b></div>
+        <div class="row meta"><span>Crédito usado</span><span class="num">$70 de $140</span></div>
+        <div class="week"><span class="p" style="--i:0">L</span><span class="p" style="--i:1">M</span><span class="p" style="--i:2">M</span><span class="t">J</span><span>V</span><span>S</span><span>D</span></div>
+      </div>
+      <div class="card">
+        <div class="row"><span class="meta">Cuota de hoy</span><span class="meta">Próximo pedido</span></div>
+        <div class="row"><span class="big">$10</span><span style="font-weight:600;color:var(--ok)">Liberado</span></div>
+      </div>
+      <div class="chat">
+        <div class="who"><i class="ph ph-whatsapp-logo"></i>Recordatorio de Fiao</div>
+        Hola. Tu cuota de hoy es <b>$10</b>. Te quedan <b>$40</b> de tu pedido. Si hoy vendiste poco, paga la mitad y completa antes del domingo.
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="strip" aria-label="El comercio de barrio">
+  <div class="wrap">
+    <div class="grid">
+      <figure class="photo"><div class="frame"><img src="img/arepera-caracas.jpg" width="1200" height="900" alt="Fachada de una arepera en la Avenida Casanova, Caracas" loading="lazy" decoding="async"></div><figcaption>Arepera en la Av. Casanova, Caracas</figcaption></figure>
+      <figure class="photo"><div class="frame"><img src="img/carniceria-el-bosque.jpg" width="1200" height="675" alt="Un carnicero corta carne en su puesto del mercado de El Bosque" loading="lazy" decoding="async"></div><figcaption>Puesto de carne, El Bosque, Caracas</figcaption></figure>
+      <figure class="photo"><div class="frame"><img src="img/parrillero.jpg" width="1200" height="880" alt="Vendedor ambulante ofrece pinchos de parrilla en la calle" loading="lazy" decoding="async"></div><figcaption>Parrillero ambulante, Venezuela</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="sec band" aria-labelledby="h-por">
+  <div class="wrap">
+    <h2 id="h-por">El banco no le presta al barrio. El prestamista sí, y cobra caro.</h2>
+    <p class="sub">El crédito que de verdad sostiene a un micronegocio en Venezuela es el de su proveedor. Fiao existe para que ese crédito crezca sin que el distribuidor arriesgue más.</p>
+    <ol class="facts">
+      <li><div class="v">3,6%</div><div><p>del PIB es todo el crédito bancario en Venezuela. En América Latina el promedio ronda el 30%.</p><small>Fuente: <a href="https://elestimulo.com/elinteres/empresas/2026-09-22/las-1-000-empresas-de-polar-un-salvavidas-para-el-ecosistema-venezolano/" target="_blank" rel="noopener">El Estímulo, sep 2026</a></small></div></li>
+      <li><div class="v">~50%</div><div><p>mensual cobra un prestamista gota a gota: 5 dólares diarios por cada 300 prestados a un comerciante.</p><small>Fuente: <a href="https://insightcrime.org/news/venezuela-business-need-dollars-loansharks-taking-advantage/" target="_blank" rel="noopener">InSight Crime, jul 2024</a></small></div></li>
+      <li><div class="v">0%</div><div><p>de impago en 100 farmacias que atendía una droguería de Caracas fiando a 10 días. Los comercios pagan; el problema es cómo cobrarles.</p><small>Fuente: entrevista propia a un exdistribuidor, sep 2026</small></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec" id="como" aria-labelledby="h-como">
+  <div class="wrap">
+    <h2 id="h-como">Cómo funciona</h2>
+    <p class="sub">Usa la relación que ya tienes con tu cliente y le suma medición y cobro diario.</p>
+    <ol class="steps">
+      <li><span class="n num">01</span><h3>Nos pasas tu cartera</h3><p>Tu lista de clientes con su historial de pedidos y pagos, en Excel o como la tengas.</p></li>
+      <li><span class="n num">02</span><h3>Fiao calcula el cupo</h3><p>Arranca en la mitad del pedido promedio y sube 20% cada vez que el cliente paga a tiempo.</p></li>
+      <li><span class="n num">03</span><h3>El cliente paga cada día</h3><p>Una cuota pequeña por pago móvil a tu cuenta, con recordatorio por WhatsApp. Día flojo, media cuota.</p></li>
+      <li><span class="n num">04</span><h3>Pedido liberado o alerta</h3><p>Si va al día, su próximo pedido sale solo. Si se atrasa dos días, te avisamos y tú decides.</p></li>
+    </ol>
+    <div class="flow" aria-label="Por dónde pasa el dinero">
+      <div><span class="meta">Paga</span><b>El comerciante</b></div>
+      <div class="arrow"><i class="ph ph-arrow-right" aria-hidden="true"></i><span>pago móvil</span></div>
+      <div><span class="meta">Recibe</span><b>Tu cuenta</b></div>
+      <div class="fiao"><span class="meta">Fiao nunca toca el dinero</span><b>Mide, recuerda y concilia.</b><span class="meta">Cobra <span class="num">2%</span> de lo que efectivamente entra.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec tight" aria-labelledby="h-lados">
+  <div class="wrap">
+    <h2 id="h-lados">Gana el distribuidor. Gana el comercio.</h2>
+    <p class="sub">Hoy, al cliente que se atrasa lo pasas a contado. Ese es justo el momento en que termina en manos del prestamista.</p>
+    <div class="sides">
+      <div class="side dist">
+        <figure class="photo"><div class="frame"><img src="img/mercancia.jpg" width="1200" height="869" alt="Un hombre carga cajas de mercancía en un mercado" loading="lazy" decoding="async"></div></figure>
+        <span class="who"><i class="ph ph-truck" aria-hidden="true"></i>Distribuidor</span>
+        <h3>Vendes más a crédito sin arriesgar más.</h3>
+        <ul>
+          <li><i class="ph ph-check" aria-hidden="true"></i><span><b>Menos atraso:</b> cuotas diarias en vez de un pago grande a 30 días.</span></li>
+          <li><i class="ph ph-check" aria-hidden="true"></i><span><b>Clientes que hoy mandas a contado</b> siguen comprando, con cupo reducido.</span></li>
+          <li><i class="ph ph-check" aria-hidden="true"></i><span><b>Nadie que contratar:</b> Fiao manda los recordatorios y concilia los pagos.</span></li>
+          <li><i class="ph ph-check" aria-hidden="true"></i><span><b>Pagas solo por lo cobrado:</b> 2% de lo que efectivamente entra.</span></li>
+        </ul>
+      </div>
+      <div class="side">
+        <figure class="photo"><div class="frame"><img src="img/mercado-calle-caracas.jpg" width="1200" height="675" alt="Una vendedora acomoda frutas y verduras en un mercado de calle en Caracas" loading="lazy" decoding="async"></div></figure>
+        <span class="who"><i class="ph ph-storefront" aria-hidden="true"></i>Comerciante</span>
+        <h3>Mercancía hoy, pagada al ritmo de tu caja.</h3>
+        <ul>
+          <li><i class="ph ph-check" aria-hidden="true"></i><span><b>Sin intereses</b> y sin papeles: el precio es el mismo que de contado.</span></li>
+          <li><i class="ph ph-check" aria-hidden="true"></i><span><b>Una cuota por día</b> que calza con lo que vendes, no una deuda de fin de mes.</span></li>
+          <li><i class="ph ph-check" aria-hidden="true"></i><span><b>Tu cupo crece</b> cada vez que pagas a tiempo.</span></li>
+          <li><i class="ph ph-check" aria-hidden="true"></i><span><b>Con tu proveedor de siempre,</b> no con un desconocido.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec tight" id="calculadora" aria-labelledby="h-calc">
+  <div class="wrap">
+    <h2 id="h-calc">Haz la cuenta con un cliente tuyo.</h2>
+    <p class="sub">Mueve los valores y compara lo que pagaría con Fiao contra lo que le cobraría un prestamista por el mismo monto y el mismo plazo.</p>
+    <div class="calc">
+      <div class="controls">
+        <div class="field"><label for="pedido">Pedido semanal <output id="oPedido" for="pedido">$140</output></label><input id="pedido" type="range" min="40" max="600" step="10" value="140"></div>
+        <div class="field"><label for="parte">Parte a crédito <output id="oParte" for="parte">50%</output></label><input id="parte" type="range" min="20" max="80" step="10" value="50"></div>
+        <div class="field"><label for="dias">Días para pagar <output id="oDias" for="dias">7</output></label><input id="dias" type="range" min="5" max="15" step="1" value="7"></div>
+        <p class="meta">Referencia del prestamista: ~1,67% diario (5 USD al día por cada 300 prestados), según InSight Crime.</p>
+      </div>
+      <div class="out" aria-live="polite">
+        <div class="pair">
+          <div><span class="meta">A crédito</span><span class="big" id="rCred">$70</span></div>
+          <div><span class="meta">Cuota diaria</span><span class="big" id="rCuota">$10.00</span></div>
+        </div>
+        <div class="cmp">
+          <div class="hl"><span class="meta">Costo con Fiao</span><span class="v">$0</span><p>Sin intereses para el comerciante. El distribuidor paga <span class="num" id="rCom">$1.40</span> de comisión.</p></div>
+          <div class="loan"><span class="meta">Costo con prestamista</span><span class="v" id="rLoan">$8.17</span><p>En intereses por el mismo monto y plazo, más el riesgo de un cobro con amenazas.</p></div>
+        </div>
+        <p class="save">Con Fiao, este cliente se ahorra <b class="num" id="rSave">$8.17</b> en este pedido.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec pilot" id="piloto" aria-labelledby="h-pilot">
+  <div class="wrap">
+    <div>
+      <h2 id="h-pilot">Pilotos en Caracas</h2>
+      <p class="sub" style="margin-bottom:28px">Buscamos tres distribuidores de alimentos para un piloto de un mes. Medimos el atraso de tus clientes antes y después.</p>
+      <ul>
+        <li><i class="ph ph-check" aria-hidden="true"></i>Sin costo durante el piloto.</li>
+        <li><i class="ph ph-check" aria-hidden="true"></i>Empiezas con los clientes que tú elijas.</li>
+        <li><i class="ph ph-check" aria-hidden="true"></i>El dinero sigue yendo directo a tu cuenta.</li>
+      </ul>
+      <figure class="photo"><div class="frame"><img src="img/mercado-chacao.jpg" width="1200" height="900" alt="Puestos de frutas y verduras dentro del Mercado Municipal de Chacao" loading="lazy" decoding="async"></div><figcaption>Mercado Municipal de Chacao, Caracas</figcaption></figure>
+    </div>
+    <form id="f" novalidate>
+      <div class="two">
+        <div class="f"><label for="nombre">Tu nombre</label><input id="nombre" name="nombre" type="text" autocomplete="name" placeholder="María González" required aria-describedby="e-nombre"><span class="err" id="e-nombre" hidden><i class="ph ph-warning-circle" aria-hidden="true"></i>Escribe tu nombre.</span></div>
+        <div class="f"><label for="empresa">Distribuidora</label><input id="empresa" name="empresa" type="text" autocomplete="organization" placeholder="Distribuidora El Llano" required aria-describedby="e-empresa"><span class="err" id="e-empresa" hidden><i class="ph ph-warning-circle" aria-hidden="true"></i>Escribe el nombre de la distribuidora.</span></div>
+      </div>
+      <div class="two">
+        <div class="f"><label for="rubro">Rubro</label><select id="rubro" name="rubro"><option>Alimentos</option><option>Bebidas</option><option>Farmacia</option><option>Limpieza y hogar</option><option>Otro</option></select></div>
+        <div class="f"><label for="clientes">Clientes pequeños <span class="opt">(aprox.)</span></label><input id="clientes" name="clientes" type="number" min="1" inputmode="numeric" placeholder="60"></div>
+      </div>
+      <div class="f"><label for="credito">¿Hoy les das crédito? ¿A cuántos días? <span class="opt">(opcional)</span></label><input id="credito" name="credito" type="text" placeholder="Sí, a 15 días a los de confianza"></div>
+      <div class="foot">
+        <button class="btn" type="submit"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>Enviar por WhatsApp</button>
+        <p class="meta">Se abre WhatsApp con tus datos listos. Esta página no guarda nada.</p>
+      </div>
+      <div class="done" id="done" role="status" hidden></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><a class="logo" href="#top"><i aria-hidden="true"></i>Fiao</a><p class="about">Crédito de proveedor con cobro diario para el comercio de barrio. Proyecto de Felipe Anselmi para el Makers Fellowship, Caracas 2026.</p></div>
+    <div><h3>Producto</h3><a href="#como">Cómo funciona</a><a href="#calculadora">Calculadora</a><a href="fiao-panel.html">Panel del distribuidor</a></div>
+    <div><h3>Contacto</h3><a href="#piloto">Sumarme al piloto</a><p>Caracas, Venezuela</p></div>
+    <p class="legal">Fiao no presta dinero ni recibe pagos. Los pagos van de la cuenta del comerciante a la del distribuidor.</p>
+    <p class="credits">Fotos vía Wikimedia Commons:
+      <a href="https://commons.wikimedia.org/wiki/File:Apreperia,_Caracas.jpg" target="_blank" rel="noopener">Beatrice Murch</a> (CC BY 2.0),
+      <a href="https://commons.wikimedia.org/wiki/File:Carne_en_el_Mercado_chino_de_El_Bosque,_en_Caracas.jpg" target="_blank" rel="noopener">Luis Carlos Díaz</a> (CC BY 4.0),
+      <a href="https://commons.wikimedia.org/wiki/File:Mercado_de_calle_en_Caracas.jpg" target="_blank" rel="noopener">Periodismodepaz</a> (CC BY 4.0),
+      <a href="https://commons.wikimedia.org/wiki/File:Municipal_Market_of_Chacao_2.jpg" target="_blank" rel="noopener">Guillermo Ramos Flamerich</a> (CC BY-SA 3.0),
+      <a href="https://commons.wikimedia.org/wiki/File:Vendedor_ambulante_de_parrilla.jpg" target="_blank" rel="noopener">Wilfredor</a> (CC0),
+      <a href="https://commons.wikimedia.org/wiki/File:Working_old_man_carrying_boxes.jpg" target="_blank" rel="noopener">Wilfredor</a> (CC0).
+      Fotos redimensionadas.</p>
+  </div>
+</footer>
+
+<script>
+// Número de WhatsApp de Felipe, formato internacional sin "+" ni espacios.
+const WA_NUMBER = "584241877228";
+const LENDER_DAILY = 5 / 300; // InSight Crime: 5 USD diarios por cada 300 prestados
+const FIAO_FEE = 0.02;
+
+const $ = id => document.getElementById(id);
+const money = n => "$" + n.toFixed(2);
+const round = n => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
+
+function calc(){
+  const pedido = +$("pedido").value, pct = +$("parte").value / 100, dias = +$("dias").value;
+  const cred = pedido * pct, cuota = cred / dias, loan = cred * LENDER_DAILY * dias;
+  $("oPedido").textContent = round(pedido);
+  $("oParte").textContent = Math.round(pct * 100) + "%";
+  $("oDias").textContent = dias;
+  $("rCred").textContent = round(cred);
+  $("rCuota").textContent = money(cuota);
+  $("rLoan").textContent = money(loan);
+  $("rSave").textContent = money(loan);
+  $("rCom").textContent = money(cred * FIAO_FEE);
+}
+["pedido","parte","dias"].forEach(id => $(id).addEventListener("input", calc));
+calc();
+
+const required = ["nombre","empresa"];
+function check(id){
+  const ok = !!$(id).value.trim();
+  $(id).setAttribute("aria-invalid", String(!ok));
+  $("e-" + id).hidden = ok;
+  return ok;
+}
+required.forEach(id => $(id).addEventListener("input", () => { if ($(id).getAttribute("aria-invalid") === "true") check(id); }));
+
+$("f").addEventListener("submit", e => {
+  e.preventDefault();
+  const bad = required.filter(id => !check(id));
+  if (bad.length){ $(bad[0]).focus(); return; }
+  const v = id => $(id).value.trim();
+  const msg = [
+    "Hola Felipe, quiero sumarme al piloto de Fiao.",
+    "Nombre: " + v("nombre"),
+    "Distribuidora: " + v("empresa"),
+    "Rubro: " + v("rubro"),
+    "Clientes pequeños: " + (v("clientes") || "sin dato"),
+    "Crédito hoy: " + (v("credito") || "sin dato")
+  ].join("\n");
+  const url = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(msg);
+  window.open(url, "_blank", "noopener");
+  const done = $("done");
+  done.hidden = false;
+  done.innerHTML = '<strong><i class="ph ph-check-circle" aria-hidden="true"></i>Tu mensaje está listo.</strong><span>Si WhatsApp no se abrió solo, <a href="' + url + '" target="_blank" rel="noopener">ábrelo aquí</a> y toca enviar.</span>';
+});
+</script>
+</body>
+</html>
